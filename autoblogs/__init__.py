@@ -4,11 +4,11 @@
 AutoBlogs - AI-Powered Content Generation Toolkit
 =================================================
 
-AN AI-assisted content generation tool that can leverage both
-open-source and/or propritary Large Language Model (LLM) agent to
-create high-quality, SEO-optimized contents for various needs. he
-system integrates a *human-in-the-loop workflow*, ensuring that
-AI-generated drafts can be reviewed, edited, and published.
+An AI-assisted content generation tool that can leverage both open-source
+and/or proprietary Large Language Model (LLM) agents to create
+high-quality, SEO-optimized content for various needs. The system
+integrates a *human-in-the-loop workflow*, ensuring that AI-generated
+drafts can be reviewed, edited, and published.
 """
 
 __version__ = "v0.0.1.dev0"
