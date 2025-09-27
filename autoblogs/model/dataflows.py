@@ -42,7 +42,7 @@ class AIModel:
         in its response. It does **not** limit the total tokens for
         the request - which is the total sum of input (prompt, system
         messages, retreived data) and output tokens (completion) and
-        must stay within the model's context limit.
+        must stay within the model's context limit. Default to 4096.
 
     :type  temperature: float
     :param temperature: A crucial settings in a large language models
@@ -50,16 +50,16 @@ class AIModel:
         model's output. A lower temperature makes the model more
         deterministic. Conversely, a higher temperature introduces
         more variability, but a very large value can produce less
-        coherent outputs. Typically a value of ``0.70`` is generally
-        considered as a good starting point.
+        coherent outputs. Typically a value of ``0.70`` (default) is
+        generally considered as a good starting point.
     """
 
     model : str
     provider : str
 
     # general model configuration parameters, usage as per model
-    max_tokens : int
-    temperature : float
+    max_tokens : int = 4096
+    temperature : float = 0.7
 
 
 @dataclass(frozen = True)
