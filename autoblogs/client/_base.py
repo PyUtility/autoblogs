@@ -23,8 +23,13 @@ class AIClient(abc.ABC):
     remain the same in the concrete classes.
     """
 
-    def __init__(self, model : AIModel) -> None:
+    def __init__(
+        self,
+        model : AIModel,
+        apikey : str | None = None
+    ) -> None:
         self.model = model.model # directly use data class attributes
+        self.apikey = apikey # any valid key, or none if not required
 
 
     @abc.abstractmethod
