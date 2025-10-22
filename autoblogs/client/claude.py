@@ -4,7 +4,13 @@
 Provide Concrete Ancthopic Claude AI Client
 """
 
+import time
+import uuid
+import anthropic
+
 from autoblogs.client._base import AIClient
+from autoblogs.utils.decorator import retry
+from autoblogs.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 
 class ClaudeClient(AIClient):
@@ -25,6 +31,7 @@ class ClaudeClient(AIClient):
         apikey : str | None = None
     ) -> None:
         super().__init__(model = model, apikey = apikey)
+        self.client = anthropic.Anthropic(api_key = self.apikey)
 
 
     @retry(
@@ -33,4 +40,38 @@ class ClaudeClient(AIClient):
         retry_on = AIRateLimitError
     )
     def generate(self, request : AIRequest) -> AIResponse:
-        pass
+        """
+        Generate Content via the Antrhopic Messages API
+        """
+
+        start = time.monotonic()
+
+        try:
+            response = self.client.messages.create(
+                model = self.model.model,
+                max_tokens = self.model.max_tokens,
+                temperature = self.model.temperature,
+                messages = [{
+                    "role" : "user", "content" : request.prompt
+                }]
+            )
+        except anthropic.RateLimitError as e:
+            raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
+        except anthropic.AIClientError as e:
+            raise AIClientError(f"Claude API Error: {e}") from e
+
+        latency = time.monotonic() - start
+        raw_response = response.content[0].text if response.content \
+            else None # failed to get any response
+        
+        print(
+            f"VERBOSE: ClaudeClient.generate({request.topic[:40]}...)"
+        )
+
+        return AIResponse(
+            request_id = request.request_id or str(uuid.uuid4()),
+            raw_response = response,
+            in_tokens = response.usage.input_tokens,
+            out_tokens = response.usage.output_tokens,
+            latency = latency
+        )
