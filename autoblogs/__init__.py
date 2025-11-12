@@ -14,3 +14,4 @@ drafts can be reviewed, edited, and published.
 __version__ = "v0.0.1.dev0"
 
 # ? added init time options registrations from aptracker/api.py
+from autoblogs.api import * # noqa: F401, F403 # pyright: ignore[reportMissingImports]

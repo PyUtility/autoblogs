@@ -4,3 +4,11 @@
 Initialization time option registrations and expose callables at
 module level for :mod:`autoblogs` module.
 """
+
+from autoblogs import model
+from autoblogs import client
+
+__all__ = [
+    "model",
+    "client"
+]
