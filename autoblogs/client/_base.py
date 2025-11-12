@@ -28,7 +28,7 @@ class AIClient(abc.ABC):
         model : AIModel,
         apikey : str | None = None
     ) -> None:
-        self.model = model.model # directly use data class attributes
+        self.model = model # directly use data class attributes
         self.apikey = apikey # any valid key, or none if not required
 
 
