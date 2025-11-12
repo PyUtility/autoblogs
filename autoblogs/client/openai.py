@@ -9,7 +9,6 @@ import uuid
 import openai
 
 from autoblogs.client._base import AIClient
-from autoblogs.utils.decorator import retry
 from autoblogs.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 
@@ -41,11 +40,6 @@ class OpenAIClient(AIClient):
         )
 
 
-    @retry(
-        max_attempts = 3,
-        backoff_factor = 2.0,
-        retry_on = AIRateLimitError
-    )
     def generate(self, request : AIRequest) -> AIResponse:
         """
         Generate Content via the OpenAI/Base URL (NVDIA-NIM/etc.) API

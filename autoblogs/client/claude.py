@@ -9,7 +9,6 @@ import uuid
 import anthropic
 
 from autoblogs.client._base import AIClient
-from autoblogs.utils.decorator import retry
 from autoblogs.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 
@@ -34,11 +33,6 @@ class ClaudeClient(AIClient):
         self.client = anthropic.Anthropic(api_key = self.apikey)
 
 
-    @retry(
-        max_attempts = 3,
-        backoff_factor = 2.0,
-        retry_on = AIRateLimitError
-    )
     def generate(self, request : AIRequest) -> AIResponse:
         """
         Generate Content via the Antrhopic Messages API
@@ -57,7 +51,7 @@ class ClaudeClient(AIClient):
             )
         except anthropic.RateLimitError as e:
             raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
-        except anthropic.AIClientError as e:
+        except anthropic.APIError as e:
             raise AIClientError(f"Claude API Error: {e}") from e
 
         latency = time.monotonic() - start
