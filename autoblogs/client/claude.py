@@ -6,7 +6,6 @@ Provide Concrete Ancthopic Claude AI Client
 
 import time
 import uuid
-import anthropic
 
 from autoblogs.client._base import AIClient
 from autoblogs.error import AIClientError, AIRateLimitError
@@ -29,6 +28,8 @@ class ClaudeClient(AIClient):
         model : AIModel,
         apikey : str | None = None
     ) -> None:
+        import anthropic
+
         super().__init__(model = model, apikey = apikey)
         self.client = anthropic.Anthropic(api_key = self.apikey)
 

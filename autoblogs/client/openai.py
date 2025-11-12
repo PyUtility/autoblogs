@@ -6,7 +6,6 @@ Provide Concrete Class for Open AI & NVIDIA-NIM Client
 
 import time
 import uuid
-import openai
 
 from autoblogs.client._base import AIClient
 from autoblogs.error import AIClientError, AIRateLimitError
@@ -34,6 +33,8 @@ class OpenAIClient(AIClient):
         apikey : str | None = None,
         base_url : str | None = None
     ) -> None:
+        import openai
+
         super().__init__(model = model, apikey = apikey)
         self.client = openai.OpenAI(
             api_key = self.apikey, base_url = base_url
