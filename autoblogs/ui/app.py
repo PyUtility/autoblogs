@@ -14,6 +14,14 @@ import streamlit as st
 from typing import Any, List
 
 def build_pages(parent : pathlib.Path) -> List[Any]:
+    """
+    Build the Multi-Page Navigation for AutoBlogs UI
+
+    The function returns a list of :class:`streamlit.Page` objects in
+    the order of navigation menu. The function returns the underlying
+    pages, title of the page and a custom icon.
+    """
+
     path = parent / "pages"
     pages = [
         ("about.py", "About AutoBlogs UI", "📜"),
@@ -30,6 +38,10 @@ def build_pages(parent : pathlib.Path) -> List[Any]:
 
 
 def load_style(parent : pathlib.Path) -> None:
+    """
+    Load the Style Sheet for AutoBlogs UI
+    """
+
     path = parent / "assets/css/style.css"
     with open(path, "r", encoding = "utf-8") as f:
         style = f.read()
@@ -47,4 +59,5 @@ if __name__ == "__main__":
     )
 
     load_style(parent = parent) # load style scheet; no error checks
-    st.navigation(build_pages(parent = parent))
+    nav = st.navigation(build_pages(parent = parent))
+    nav.run() # run the application; navigation engine
