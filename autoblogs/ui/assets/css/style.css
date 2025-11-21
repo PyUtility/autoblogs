@@ -1,83 +1,103 @@
 /* Auto Blogger — Custom Streamlit Theme Overrides */
 
 /* --- typography --- */
-html, body, [class*="css"] {
-    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+html,
+body,
+[class*="css"] {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 /* --- metric cards --- */
 [data-testid="stMetric"] {
-    background-color: #f8f9fb;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 16px;
+  background-color: #f8f9fb;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
 }
 
 [data-testid="stMetricValue"] {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1a202c;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
 }
 
 [data-testid="stMetricLabel"] {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #718096;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
 }
 
 /* --- sidebar --- */
 [data-testid="stSidebarNav"] {
-    padding-top: 1rem;
+  padding-top: 1rem;
 }
 
 section[data-testid="stSidebar"] {
-    background-color: #1a1f2e;
+  background-color: #1a1f2e;
 }
 
 section[data-testid="stSidebar"] * {
-    color: #e2e8f0 !important;
+  color: #e2e8f0 !important;
 }
 
 /* --- buttons --- */
 .stButton > button[kind="primary"] {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
-    border-radius: 8px;
-    font-weight: 600;
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 .stButton > button[kind="primary"]:hover {
-    background-color: #2563eb;
-    border-color: #2563eb;
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 
 /* --- expanders --- */
 [data-testid="stExpander"] {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 8px;
 }
 
 /* --- status badges --- */
 [data-testid="stAlert"] {
-    border-radius: 8px;
+  border-radius: 8px;
 }
 
 /* --- dataframe --- */
 [data-testid="stDataFrame"] {
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
 
 /* --- code blocks --- */
 .stCode {
-    border-radius: 8px;
+  border-radius: 8px;
 }
 
 /* --- dividers --- */
 hr {
-    border-color: #e2e8f0;
-    margin: 1.5rem 0;
+  border-color: #e2e8f0;
+  margin: 1.5rem 0;
+}
+
+/* --- footer --- */
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 2px 0;
+}
+
+/* header */
+header {
+  text-align: center;
+  padding: 5px 0;
 }
