@@ -36,3 +36,6 @@ exclude = ["tests*", "examples*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "autoblogs.__version__"}
+
+[project.scripts]
+autoblogs-ui = "autoblogs.ui.main:launch"
