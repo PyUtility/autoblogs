@@ -22,6 +22,9 @@ setup(
     packages = find_packages(
         exclude = ["tests*", "examples*"]
     ),
+    install_requires = [
+        "streamlit>=1.55"
+    ],
     classifiers = [
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",

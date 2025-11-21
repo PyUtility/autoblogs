@@ -28,6 +28,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License"
 ]
 
+dependencies = [
+    "streamlit>=1.55"
+]
+
 [tool.setuptools]
 py-modules = []
 
