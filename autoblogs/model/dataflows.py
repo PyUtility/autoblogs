@@ -17,6 +17,8 @@ import datetime as dt
 from typing import Optional
 from dataclasses import dataclass, field
 
+from autoblogs.config.constants import AIProvider
+
 @dataclass(frozen = True)
 class AIModel:
     """
@@ -31,11 +33,10 @@ class AIModel:
         models both open-source and/or proprietary models provided
         by different providers.
 
-    :type  provider: str
-    :param provider: Name of the provider, for example any open-source
-        provider like ``ollama`` or proprietary models like ``claude``
-        models. If a model requires an API key, then the same should
-        be provided by the environment variables (for security).
+    :type  provider: AIProvider
+    :param provider: Name of the supported AI/LLM Agents provider. The
+        value can be any of the defined :class:`AIProvider` values,
+        defaults to ``AIProvider.LOCAL`` value.
 
     :type  max_tokens: int
     :param max_tokens: Maximum number of tokens the model can generate
@@ -55,7 +56,7 @@ class AIModel:
     """
 
     model : str
-    provider : str
+    provider : AIProvider = AIProvider.LOCAL
 
     # general model configuration parameters, usage as per model
     max_tokens : int = 4096
