@@ -8,10 +8,10 @@ import streamlit as st
 
 from autoblogs.ui.components.render import render_page # type: ignore
 
-def dashboard() -> None:
+def about() -> None:
     st.title("📜 About AutoBlogs UI")
     st.caption("Understand AutoBlogs UI")
 
     st.divider()
 
-render_page(dashboard)
+render_page(about)
