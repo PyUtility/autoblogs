@@ -11,9 +11,9 @@
 
 <div align = "justify">
 
-AN AI-assisted content generation tool that can leverage both open-source and/or propritary Large Language Model (LLM) agent to
-create high-quality, SEO-optimized contents for various needs. The system integrates a *human-in-the-loop workflow*, ensuring
-that AI-generated drafts can be reviewed, edited, and refined before publishing.
+**`AutoBlogs`** is an AI-assisted content generation tool that can leverage both open-source and/or proprietary Large Language
+Model (LLM) agents to create high-quality, SEO-optimized content for various needs. The system integrates a *human-in-the-loop workflow*,
+ensuring that AI-generated drafts can be reviewed, edited, and refined before publishing.
 
 ## Project Overview
 
@@ -26,16 +26,16 @@ etc. and thus starting a technical writing business or freelance job becomes ver
 
 ## Getting Started
 
-The repository uses third party Python SDKs, that provides API interface to interact with *open-source* or any *proprietary* LLM,
-like [OpenAI](https://pypi.org/project/openai/) or [Anthropic Claude](https://pypi.org/project/anthropic/) to generate contents.
+The repository uses third-party Python SDKs that provide an API interface to interact with *open-source* or any *proprietary* LLM,
+like [OpenAI](https://pypi.org/project/openai/) or [Anthropic Claude](https://pypi.org/project/anthropic/) to generate content.
 
-The package is available in PyPI and can be installed as below:
+The package is available on PyPI and can be installed as follows:
 
 ```shell
 pip install autoblogs
 ```
 
-The package does not have a hard dependency on a third-party LLM SDK, but requires so based on the type of model you want to
+The package does not have a hard dependency on a third-party LLM SDK, but requires one based on the type of model you want to
 use. For example,
 
 ```python
@@ -50,7 +50,7 @@ client = autoblogs.client.ClaudeClient(...) # pip install anthropic
 ### Environment Variables
 
 For getting started, you will require the name of the model (`LLM_MODEL_NAME`) and an API key (if any, `LLM_MODEL_APIKEY`) to
-use the module. You can also integrate to external API endpoints or self-hosted/your own companies API endpoints to configure
+use the module. You can also integrate with external API endpoints or self-hosted/your own company's API endpoints to configure
 the services as below.
 
 ```shell
@@ -58,6 +58,11 @@ LLM_MODEL_NAME = "awesome-model"
 LLM_MODEL_APIKEY = "abc-example.com"
 LLM_API_BASE_URL = "https://example.com/api/v1"
 ```
+
+### Command Line Tools
+
+The package provides distinct *command-line* tools for different tasks. (I) **`autoblogs-ui`** opens a full-fledged UI to
+create, modify, and finalize content, and (II) **`autoblogs-cli`** is the same application available in the terminal.
 
 ### Python Script
 
@@ -92,7 +97,7 @@ print(response.raw_reponse)
 ## Contribution Guidelines
 
 All contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome. A detailed
-overview on how to contribute can be found in the **contributing guidelines**. If you run into an issue, please file a new
+overview of how to contribute can be found in the **contributing guidelines**. If you run into an issue, please file a new
 [issue](https://github.com/PyUtility/autoblogs/issues) for discussion. Create a pull request for a new feature or a fix to
 an existing issue [here](https://github.com/PyUtility/autoblogs/pulls).
 
