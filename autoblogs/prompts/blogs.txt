@@ -47,3 +47,4 @@ Return ONLY the Markdown content of the blog post. Do NOT include:
 - Meta-commentary such as "Here is the blog post:" or "I hope this helps."
 
 Begin immediately with the `# Title` heading.
+Do not ask a follow up question.
