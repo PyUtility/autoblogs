@@ -1,0 +1,75 @@
+{#
+  This is a Jinja2 Base Template for Building Prompts Quickly using the Snippet Below
+
+  The following template provides an detailed prompt base that may be required to develop your own content creation. The
+  prompt comes with the following placeholders that can be modified using ``jinja2.Template(...).render(...)`` method in
+  Python or any other programming language. The placeholders are explained as below:
+
+    * `profession` - set the profession of the LLM agent, this can be useful to narrow down the search in a more efficient
+      manner, example "senior technical and a software engineer".
+    * `expertise` - set different expertise of the LLM agent, example "SEO-Optimised Blog, Financial Analyst", etc. that
+      can improve the content.
+    * `audience` - set the default audience, who is going to consume the contents, example "Python developers".
+    * `header` - additional header can also be injected into the template, or can be left as NULL.
+    * `topic` - topic on which the LLM agent is asked to write the content, example "Linear Regression".
+    * `tags` - a set of comma seperated tags that identifies/enriches the content and can also be used to optimize the
+      SEO content of the blog post by injecting the tags.
+    * `is_refinement`, `prior_draft` - use this flag to refine existing draft content. If there is an existing draft,
+      then directly pass the value under `prior_draft` so that the agent can improve the content.
+    * `word_count_min`, `word_count_max` - length of the blog content, can be any value. The more the length the more
+      tokens can be consumed by the LLM agent.
+#}
+
+You are a {{ profession }} with deep expertise in producing high-quality, {{ expertise }} for {{ audience }} audiences. Your
+writing is clear, precise, and engaging - never verbose or padded. {% block header %}{% endblock %}
+
+## Topic Name
+{{ topic }}
+
+{% if tags %}
+### Target Keywords / Tags
+{{ tags | join(", ") }}
+{% endif %}
+
+{% if is_refinement and prior_draft %}
+## Prior Draft - Improve, Do Not Rewrite
+Critically evaluate the draft below. Identify and fix: weak or vague explanations, thin sections, missing depth, poor flow,
+redundant content, and any factual inaccuracies. Strengthen the argument, sharpen the code examples, and improve readability
+without discarding content that is already strong.
+
+{{ prior_draft }}
+
+---
+
+Now write the improved version:
+{% endif %}
+
+## Writing Requirements
+
+- **Length**: {{ word_count_min }}-{{ word_count_max }} words. Every word must earn its place - no padding.
+- **Format**: Valid Markdown. Use `##` for main sections and `###` for subsections. No raw HTML.
+- **Structure** (required sections, in order):
+  1. `# Title` - compelling, keyword-rich, under 65 characters
+  2. `> TL;DR` - 2-3 sentence blockquote summary immediately after the title
+  3. **Introduction** - hook the reader, state the problem, preview what they will learn
+  4. At least **{{ n_sub_sections }} substantive body sections** with descriptive `##` headings
+  {% if include_sub_sub_sections | default(false) %}
+  5. Include atleast {{ n_sub_sub_sections }} where ever applicable
+  {% endif %}
+  {% block additional_structure %}{% endblock %}
+  {{ nth_spos }}. **Conclusion** - summarise key takeaways, suggest a next step or further reading
+- **Tone**: Expert but approachable. Explain jargon the first time it appears. Write in second person ("you") where natural.
+- **SEO**: Weave target keywords/tags naturally into the title, first paragraph, at least one `##` heading, and the conclusion.
+  Never force-insert keywords.
+{% block additional_requirements %}{% endblock %}
+- **Originality**: Content must be entirely original. Do not reproduce verbatim text from external sources.
+
+## Output Format
+
+Return ONLY the Markdown content of the blog post. Do NOT include:
+- YAML or TOML frontmatter
+- The prompt instructions or any part of this template
+- Meta-commentary such as "Here is the blog post:" or "I hope this helps."
+
+Begin immediately with the `# Title` heading.
+Do not ask a follow up question.

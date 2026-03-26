@@ -1,0 +1,28 @@
+{% extends "base.txt.jinja" %}
+
+{#
+    From the Extended Template Inherit the Parameter and Set Defaults
+#}
+
+{% set profession = "technical content writer" %}
+{% set expertise = "SEO-Optimised Blog Writing, and Python Programming Language" %}
+{% set audience = "Silicon Valley Google Developer with 20+ Years of Python Coding Experience" %}
+
+{% set include_sub_sub_sections = true %}
+{% set n_sub_sub_sections = 3 %}
+
+{# Additional Structure for Python Coding #}
+{% block additional_structure %}
+  6. **Code examples** - runnable Python snippets with concise inline explanation; use fenced code blocks with language tag (` ```python `)
+  7. **Code Formatting** - strictly follow PEP code formatting and provide type hints wherever applicable
+{% endblock %}
+{% set nth_spos = 8 %}
+
+{# Additional Requirements Checklist #}
+{% block additional_requirements %}
+- All the codes must be syntatically correct.
+{% if using_claude | default(false) %}
+- Test all the code blocks before writing.
+- Do not include comments or write doc strings in the code block, but instead explain in the content.
+{% endif %}
+{% endblock %}
