@@ -9,7 +9,7 @@ AI generation, draft refinement, human approval, and final publishing.
 
 import pathlib
 
-from autoblogs.client._base import AIClient
+from autoblogs.client.base import AIClient
 
 class ContentManager:
     """

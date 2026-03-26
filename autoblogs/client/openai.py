@@ -7,7 +7,7 @@ Provide Concrete Class for Open AI & NVIDIA-NIM Client
 import time
 import uuid
 
-from autoblogs.client._base import AIClient
+from autoblogs.client.base import AIClient
 from autoblogs.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 

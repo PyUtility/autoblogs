@@ -7,10 +7,12 @@ Errors & Warnings Package for AutoBlogs
 
 from autoblogs.error.error import (
     AIClientError,
-    AIRateLimitError
+    AIRateLimitError,
+    UndefinedModel
 )
 
 __all__ = [
     "AIClientError",
-    "AIRateLimitError"
+    "AIRateLimitError",
+    "UndefinedModel"
 ]
