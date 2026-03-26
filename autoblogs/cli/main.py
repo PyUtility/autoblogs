@@ -17,10 +17,9 @@ import os
 import getpass
 import pathlib
 
-import jinja2
 from dotenv import load_dotenv
 
-from autoblogs.prompts import PROMPT_BLOGS
+from autoblogs.prompts import render
 from autoblogs.client.claude import ClaudeClient
 from autoblogs.client.openai import OpenAIClient
 from autoblogs.config.constants import AIProvider
@@ -106,27 +105,24 @@ def launch() -> AIResponse:
 
     # ! render the Jinja2 template before building the request — both clients
     # ! only forward request.prompt to the API; request.context is not sent
-    rendered_prompt = jinja2.Template(PROMPT_BLOGS).render(
-        topic          = topic,
-        tags           = [],
-        is_refinement  = False,
-        word_count_min = 800,
-        word_count_max = 1200,
+    context = render(
+        filename        = "python.txt.jinja",
+        topic           = topic,
+        tags            = [],
+        is_refinement   = False,
+        word_count_min  = 800,
+        word_count_max  = 1200,
+        n_sub_sections  = 4,
+        using_claude    = provider == "CLAUDE",
     )
-
-    if prompt:
-        rendered_prompt = (
-            f"{rendered_prompt}\n\n"
-            f"## Additional Requirements\n{prompt}"
-        )
 
     model_name = _DEFAULT_MODELS.get(provider, _DEFAULT_MODEL_FALLBACK)
     model      = AIModel(model = model_name)
 
     request = AIRequest(
         topic   = topic,
-        prompt  = rendered_prompt,
-        context = PROMPT_BLOGS,
+        prompt  = prompt,
+        context = context,
     )
 
     # ? base_url applies only to NVIDIA-NIM which uses a custom OpenAI-compatible endpoint

@@ -14,6 +14,7 @@ import pathlib
 PROMPT_DIRECTORY = pathlib.Path(__file__).parent
 
 def render(filename : str, **kwargs) -> str:
-    return jinja2.Template(
-        open(PROMPT_DIRECTORY / filename, "r").read()
-    ).render(**kwargs).strip()
+    env = jinja2.Environment(
+        loader = jinja2.FileSystemLoader(str(PROMPT_DIRECTORY))
+    )
+    return env.get_template(filename).render(**kwargs).strip()
