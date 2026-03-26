@@ -26,5 +26,5 @@ DraftState = Enum(
 
 
 AIProvider = Enum(
-    "AIProvider", ["CLAUDE", "OPENAI", "NVIDIA-NIM", "LOCAL"]
+    "AIProvider", ["CLAUDE", "OPENAI", "NVIDIA_NIM", "LOCAL"]
 )
