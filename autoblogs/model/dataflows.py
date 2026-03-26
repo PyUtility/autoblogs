@@ -14,7 +14,7 @@ response needs to be augmented, then create a new instance.
 
 import datetime as dt
 
-from typing import Any, Optional, Union
+from typing import Optional, Union
 from dataclasses import dataclass, field
 
 from autoblogs.config.constants import (
@@ -58,7 +58,8 @@ class AIModel:
     """
 
     provider : AIProvider = AIProvider.LOCAL
-    useModel : Optional[Union[ClaudeModel, OpenAIModel, Any]] = None
+    useModel : Union[ClaudeModel, OpenAIModel, str] \
+        = "https://localhost:11434"
 
     # general model configuration parameters, usage as per model
     max_tokens  : int = 4096
