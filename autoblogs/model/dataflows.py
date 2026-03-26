@@ -85,12 +85,14 @@ class AIRequest:
         added for finer controls.
 
     :type  context: str
-    :param context: Context or additional data required to generate
-        the content. This is optional, defaults to None.
+    :param context: The context is the additional requirement that is
+        passed to the model to make a cleaner and refined structure.
+        Check the pre-defined :mod:`jinja2` templates that can be used
+        to format the context or define your own.
     """
 
-    topic : str
-    prompt : str
+    topic   : str
+    prompt  : str
     context : Optional[str] = None
 
     # request releated and content tagging/reviewer related details
@@ -133,11 +135,11 @@ class AIResponse:
         network latency (if any).
     """
 
-    request_id : str
+    request_id   : str
     raw_response : str
 
     # ? get the tokens, can be used to optimize the model
-    in_tokens : int
+    in_tokens  : int
     out_tokens : int
 
     # ? latency can be termed as the time b/w input and output
