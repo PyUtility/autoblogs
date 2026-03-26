@@ -14,10 +14,12 @@ response needs to be augmented, then create a new instance.
 
 import datetime as dt
 
-from typing import Optional
+from typing import Any, Optional, Union
 from dataclasses import dataclass, field
 
-from autoblogs.config.constants import AIProvider
+from autoblogs.config.constants import (
+    AIProvider, ClaudeModel, OpenAIModel
+)
 
 @dataclass(frozen = True)
 class AIModel:
@@ -27,16 +29,16 @@ class AIModel:
     The AI model configuration that globally defines the model to used,
     provider of the model and other general configuration settings.
 
-    :type  model: str
-    :param model: Name of the model, this can be any supported model
-        that is widely available. The module accepts any types of
-        models both open-source and/or proprietary models provided
-        by different providers.
-
     :type  provider: AIProvider
     :param provider: Name of the supported AI/LLM Agents provider. The
         value can be any of the defined :class:`AIProvider` values,
         defaults to ``AIProvider.LOCAL`` value.
+
+    :type  useModel: Optional[Union[ClaudeModel, OpenAIModel, Any]]
+    :param useModel: Name of the model, this can be any supported model
+        that is widely available. The name of the model can be any
+        of the ``Enum`` as per the base model or any value. In the
+        forward integration model this parameter should be controlled.
 
     :type  max_tokens: int
     :param max_tokens: Maximum number of tokens the model can generate
@@ -55,11 +57,11 @@ class AIModel:
         generally considered as a good starting point.
     """
 
-    model : str
     provider : AIProvider = AIProvider.LOCAL
+    useModel : Optional[Union[ClaudeModel, OpenAIModel, Any]] = None
 
     # general model configuration parameters, usage as per model
-    max_tokens : int = 4096
+    max_tokens  : int = 4096
     temperature : float = 0.7
 
 

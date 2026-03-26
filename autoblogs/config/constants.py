@@ -28,3 +28,13 @@ DraftState = Enum(
 AIProvider = Enum(
     "AIProvider", ["CLAUDE", "OPENAI", "NVIDIA_NIM", "LOCAL"]
 )
+
+# LLM Agent Specific Model Name(s); Useful for Context Setting and
+# other forms of optimization of the output, token usage, etc.
+ClaudeModel = Enum(
+    "ClaudeModel", ["HAIKU 4.5", "SONET 4.6", "OPUS 4.6"],
+)
+
+OpenAIModel = Enum(
+    "OpenAIModel", ["GPT-5.1 Codex", "GPT-4.1", "GPT-5 nano"]
+)
