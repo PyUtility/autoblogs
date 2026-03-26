@@ -41,15 +41,20 @@ class ClaudeClient(AIClient):
 
         start = time.monotonic()
 
+        # ! context holds the rendered Jinja2 template — send it as the system
+        # ! prompt so the model follows the markdown/structure instructions;
+        # ! without this the template is silently dropped and never seen by the API
+        create_kwargs : dict = dict(
+            model       = self.model.model,
+            max_tokens  = self.model.max_tokens,
+            temperature = self.model.temperature,
+            messages    = [{"role" : "user", "content" : request.prompt}],
+        )
+        if request.context:
+            create_kwargs["system"] = request.context
+
         try:
-            response = self.client.messages.create(
-                model = self.model.model,
-                max_tokens = self.model.max_tokens,
-                temperature = self.model.temperature,
-                messages = [{
-                    "role" : "user", "content" : request.prompt
-                }]
-            )
+            response = self.client.messages.create(**create_kwargs)
         except anthropic.RateLimitError as e:
             raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
         except anthropic.APIError as e:

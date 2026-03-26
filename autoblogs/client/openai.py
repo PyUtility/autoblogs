@@ -48,14 +48,20 @@ class OpenAIClient(AIClient):
 
         start = time.monotonic()
 
+        # ! context holds the rendered Jinja2 template — send it as the system
+        # ! message so the model follows the markdown/structure instructions;
+        # ! without this the template is silently dropped and never seen by the API
+        messages : list[dict] = []
+        if request.context:
+            messages.append({"role" : "system", "content" : request.context})
+        messages.append({"role" : "user", "content" : request.prompt})
+
         try:
             response = self.client.chat.completions.create(
-                model = self.model.model,
-                max_tokens = self.model.max_tokens,
+                model       = self.model.model,
+                max_tokens  = self.model.max_tokens,
                 temperature = self.model.temperature,
-                messages = [{
-                    "role" : "user", "content" : request.prompt
-                }]
+                messages    = messages,
             )
         except openai.RateLimitError as e:
             raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
