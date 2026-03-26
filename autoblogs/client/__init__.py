@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-from autoblogs.client.base import ClaudeClient, OpenAIClient
+from autoblogs.client.base import getClient
 
-__all__ = [
-    "ClaudeClient",
-    "OpenAIClient"
-]
+__all__ = ["getClient"]

@@ -237,3 +237,25 @@ class OpenAIClient(AIClient):
             out_tokens = response.usage.completion_tokens, # type: ignore
             latency = time.monotonic() - start
         )
+
+
+def getClient(
+        provider : str, apikey : str, **kwargs
+    ) -> AIClient:
+    """
+    Get the Client Instance based on the AI Provider Name
+    """
+
+    client = dict(
+        CLAUDE = ClaudeClient, OPENAI = OpenAIClient,
+        NVIDIA_NIM = OpenAIClient, LOCAL = OpenAIClient
+    )[provider]
+
+    if provider == "NVIDIA_NIM":
+        client = client(
+            apikey = apikey, base_url = kwargs.get("base_url") # type: ignore
+        )
+    else:
+        client = client(apikey = apikey)
+
+    return client # type: ignore
