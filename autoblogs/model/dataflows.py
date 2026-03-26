@@ -136,7 +136,7 @@ class AIResponse:
     """
 
     request_id   : str
-    raw_response : str
+    raw_response : Optional[str]
 
     # ? get the tokens, can be used to optimize the model
     in_tokens  : int
@@ -165,4 +165,4 @@ class AIResponse:
         Return the Approximate Number of Words in Raw Text
         """
 
-        return len(self.raw_response.split())
+        return len(str(self.raw_response).split())

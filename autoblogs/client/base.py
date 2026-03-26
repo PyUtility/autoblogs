@@ -10,13 +10,16 @@ has to be implemented in the concrete classes.
 """
 
 import abc
+import time
 
 from typing import Optional
+from uuid import uuid4 as UUIDx
 
 from autoblogs.config.constants import (
     AIProvider, ClaudeModel, OpenAIModel
 )
 from autoblogs.error import UndefinedModel
+from autoblogs.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 
 class AIClient(abc.ABC):
@@ -104,3 +107,133 @@ class AIClient(abc.ABC):
         """
 
         pass
+
+
+class ClaudeClient(AIClient):
+    """
+    Anthropic Claude API Client to Generate Content(s) from Prompt
+
+    Wraps the ``anthropic`` SDK's messages API using the ``model.*``
+    to generate content. The model is the concrete implementation of
+    the :class:`AIClient` for Anthropic SDK. On using this model,
+    :mod:`anthropic` is required, which is imported at initialization.
+    """
+
+    def __init__(self, apikey : str) -> None:
+        import anthropic
+        super().__init__(apikey = apikey)
+
+        # create the client object; this is different for each model
+        self.client = anthropic.Anthropic(api_key = self.apikey)
+
+
+    def generate(self, request : AIRequest) -> AIResponse:
+        """
+        Generate Content via the Antrhopic Messages API
+        """
+
+        start = time.monotonic()
+
+        # Context holds the required Jinja2 Template
+        # The Context should be sent as ``system`` Argument
+        config : dict = dict(
+            model = self.model.useModel,
+            max_tokens = self.model.max_tokens,
+            temperature = self.model.temperature,
+
+            # messages is the actual content block, user role
+            messages = [{
+                "role" : "user", "content" : request.prompt
+            }]
+        )
+
+        if request.context:
+            config["system"] = request.context
+
+        try:
+            response = self.client.messages.create(**config)
+        except anthropic.RateLimitError as e: # type: ignore
+            raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
+        except anthropic.APIError as e: # type: ignore
+            raise AIClientError(f"Claude API Error: {e}") from e
+
+        raw_response = response.content[0].text if response.content \
+            else None # failed to get any response
+
+        # Generate AIResponse() Method and Return
+        return AIResponse(
+            request_id = request.request_id or str(UUIDx()),
+            raw_response = raw_response,
+            in_tokens = response.usage.input_tokens,
+            out_tokens = response.usage.output_tokens,
+            latency = time.monotonic() - start
+        )
+
+
+class OpenAIClient(AIClient):
+    """
+    Open AI API Client for Content Generation
+
+    Wraps the ``openai`` SDK's messages API using the ``model.*``
+    to generate content. The model is the concrete implementation of
+    the :class:`AIClient` for Open AI SDK. On using this model,
+    :mod:`openai` is required, which is imported at initialization.
+
+    The class can also be used for `NVDIA-NIM` AI Agents, by using
+    endpoints from (``https://integrate.api.nvidia.com/v1``) which
+    exposes OpenAI compatible completion interfaces.
+    """
+
+    def __init__(
+            self, apikey : str, base_url : Optional[str] = None
+    ) -> None:
+        import openai
+        super().__init__(apikey = apikey)
+
+        # create the client object; this is different for each model
+        self.client = openai.OpenAI(
+            api_key = self.apikey, base_url = base_url
+        )
+
+
+    def generate(self, request : AIRequest) -> AIResponse:
+        """
+        Generate Content via the Antrhopic Messages API
+        """
+
+        start = time.monotonic()
+
+        # Context holds the required Jinja2 Template
+        # The Context can only be send as ``messages`` argument
+        messages = [{"role" : "system", "content" : request.prompt}]
+
+        if request.context:
+            messages.append({
+                "role" : "system", "content" : request.context
+            })
+
+        try:
+            response = self.client.chat.completions.create(
+                model = self.model.useModel, # type: ignore
+                max_tokens = self.model.max_tokens,
+                temperature = self.model.temperature,
+
+                # messages is the actual content block, user role
+                messages = messages # type: ignore
+            )
+        except openai.RateLimitError as e: # type: ignore
+            raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
+        except openai.APIError as e: # type: ignore
+            raise AIClientError(f"Claude API Error: {e}") from e
+
+        raw_response = response.choices[0].message.content \
+            if response.choices else None # failed to get any response
+
+        # Generate AIResponse() Method and Return
+        return AIResponse(
+            request_id = request.request_id or str(UUIDx()),
+            raw_response = raw_response,
+            in_tokens = response.usage.prompt_tokens, # type: ignore
+            out_tokens = response.usage.completion_tokens, # type: ignore
+            latency = time.monotonic() - start
+        )
