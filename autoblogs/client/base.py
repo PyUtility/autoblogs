@@ -80,6 +80,7 @@ class AIClient(object):
         models = dict(CLAUDE = ClaudeModel, OPENAI = OpenAIModel)
         models = models.get(provider.name, None)
 
+        model = None
         if models:
             options = [ (elem.value, elem.name) for elem in models ]
             selection = input(
@@ -93,13 +94,15 @@ class AIClient(object):
                     if selection.upper() in models.__members__ \
                     else models(int(selection))
             except (KeyError, ValueError):
-                model = selection.upper() or "https://localhost:11434"
-                
-        return model # type: ignore
+                model = selection.upper()
+        else:
+            model = "https://localhost:11434"
+
+        return model
 
 
 def claudeGenerate(
-        model : AIModel, request : AIRequest, apikey : str
+        model : AIModel, request : AIRequest, apikey : str, **_
     ) -> AIResponse:
     """
     Anthropic Claude API Client to Generate Content(s) from Prompt

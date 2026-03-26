@@ -3,10 +3,10 @@
 """
 CLI Application for AutoBlogs - Content Creation Tool
 
-Entry point for the command-line interface. Collects user input (provider,
-topic, and additional requirements), renders the structured Jinja2 prompt
-template with the chosen topic and default word-count bounds, and invokes
-the appropriate LLM client to generate a blog post.
+Entry point for the command-line interface. Displays the ASCII art
+banner, collects the blog topic and additional requirements from the
+user, renders the structured Jinja2 prompt template, and invokes the
+appropriate LLM client to generate a blog post.
 
 :NOTE: Requires ``LLM_MODEL_APIKEY`` (and ``LLM_API_BASE_URL`` for the
     ``NVIDIA-NIM`` provider) to be set in the environment or a ``.env``
@@ -20,104 +20,61 @@ import pathlib
 from dotenv import load_dotenv
 
 from autoblogs.prompts import render
-from autoblogs.client.claude import ClaudeClient
-from autoblogs.client.openai import OpenAIClient
+from autoblogs.client import (
+    AIClient, claudeGenerate, generateOpenAI
+)
 from autoblogs.config.constants import AIProvider
-from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
-
-
-# ! update these when newer model versions are released
-_DEFAULT_MODELS : dict[str, str] = {
-    "CLAUDE"     : "claude-opus-4-6",
-    "OPENAI"     : "gpt-4o",
-    "NVIDIA-NIM" : "nvidia/nemotron-content-safety-reasoning-4b",
-}
-
-_DEFAULT_MODEL_FALLBACK : str = "gpt-4o"
-
-
-def config(username : str, homepage : str) -> None:
-    """
-    Configure CLI Session Parameters via Interactive Input
-
-    Displays the ASCII banner, prompts the user to select an AI provider,
-    enter the blog topic and additional requirements, and loads the API
-    credentials from the environment or ``.env`` file.
-
-    :type  username: str
-    :param username: OS username shown in the welcome banner.
-
-    :type  homepage: str
-    :param homepage: Project homepage URL shown in the welcome banner.
-    """
-
-    root = pathlib.Path(__file__).parent / "static"
-    art  = open(root / "ascii.graffiti.txt", "r").read()
-
-    print(f"\033[96m{art}\033[0m", end = "\n\n")
-    print(
-        f"Welcome \033[1m{username}\033[0m to AutoBlogs CLI! "
-        "Please enter the following information (or select defaults)."
-        f"\n\033[1m\033[92m  >> Homepage: {homepage}\033[0m\n\n"
-    )
-
-    global topic, prompt, provider, aiclient, apikey, baseuri
-
-    available = " | ".join([
-        p.name for p in AIProvider  # type: ignore
-    ])
-    print(f"Available AI Provider  : {available}")
-    provider = input("Select the AI Provider : ")
-
-    aiclient = {
-        "CLAUDE" : ClaudeClient
-    }.get(provider, OpenAIClient)
-
-    print("\n\nSet the API Key in Environment Variable\n")
-
-    topic  = input("Topic of the Blog      : ")
-    prompt = input("Elaborate Requirements : ")
-
-    load_dotenv()
-    apikey  = os.getenv("LLM_MODEL_APIKEY")
-    baseuri = os.getenv("LLM_API_BASE_URL") \
-        if provider == "NVIDIA-NIM" else None
+from autoblogs.model.dataflows import AIRequest, AIResponse
 
 
 def launch() -> AIResponse:
     """
     Launch the AutoBlogs CLI Content Generation Workflow
 
-    Orchestrates the full generation pipeline: collects user input via
-    :func:`config`, renders the Jinja2 prompt template with the chosen
-    topic and sensible defaults, selects the correct model name for the
-    provider, instantiates the LLM client, and prints the generated post.
+    Orchestrates the full generation pipeline: displays the welcome
+    banner, prompts the user for the blog topic and requirements,
+    renders the Jinja2 prompt template, instantiates the LLM client
+    via :func:`getClient`, and prints the generated post.
 
     :rtype:  AIResponse
-    :return: Complete AI response including the raw Markdown blog post and
-        token-usage metrics.
+    :return: Complete AI response including the raw Markdown blog post
+        and token-usage metrics.
     """
 
-    config(
-        username = getpass.getuser(),
-        homepage = "https://github.com/PyUtility/autoblogs"
+    root = pathlib.Path(__file__).parent / "static"
+    home = "https://github.com/PyUtility/autoblogs"
+    term = open(root / "ascii.graffiti.txt", "r").read()
+
+    print(f"\033[96m{term}\033[0m", end = "\n\n")
+    print(
+        f"Welcome \033[1m{getpass.getuser()}\033[0m to AutoBlogs CLI! "
+        "Please enter the following information (or select defaults)."
+        f"\n\033[1m\033[92m  >> Homepage: {home}\033[0m\n\n"
     )
+
+    load_dotenv()
+    apikey  = os.getenv("LLM_MODEL_APIKEY")
+    base_url = os.getenv("LLM_API_BASE_URL")
+
+    # define the agent model, use the AIClient.__set_model__() method
+    client = AIClient(apikey = apikey)
+    method = dict(
+        CLAUDE = claudeGenerate, OPENAI = generateOpenAI
+    ).get(client.provider.name, generateOpenAI)
+
+    # additional inputs for the render engine
+    topic    = input("\nSet the Content Topic (one-line): ")
+    prompt   = input("Explain the Prompt to Generate Content: ")
+    keywords = input("Set SEO Keywords (comma seperated): ")
 
     # ! render the Jinja2 template before building the request — both clients
     # ! only forward request.prompt to the API; request.context is not sent
     context = render(
-        filename        = "python.txt.jinja",
-        topic           = topic,
-        tags            = [],
-        is_refinement   = False,
-        word_count_min  = 800,
-        word_count_max  = 1200,
-        n_sub_sections  = 4,
-        using_claude    = provider == "CLAUDE",
+        filename = "python.txt.jinja", topic = topic, tags = keywords,
+        is_refinement = False, word_count_min = 800,
+        word_count_max = 1200, n_sub_sections = 4,
+        using_claude = client.provider.name == "CLAUDE",
     )
-
-    model_name = _DEFAULT_MODELS.get(provider, _DEFAULT_MODEL_FALLBACK)
-    model      = AIModel(model = model_name)
 
     request = AIRequest(
         topic   = topic,
@@ -125,21 +82,17 @@ def launch() -> AIResponse:
         context = context,
     )
 
-    # ? base_url applies only to NVIDIA-NIM which uses a custom OpenAI-compatible endpoint
-    if provider == "NVIDIA-NIM":
-        client = aiclient(
-            model = model, apikey = apikey, base_url = baseuri  # type: ignore[call-arg]
-        )
+    model = None
+    if client.provider.name == AIProvider.NVIDIA_NIM:
+        model = os.getenv("LLM_MODEL_NAME")
     else:
-        client = aiclient(  # type: ignore
-            model = model, apikey = apikey
-        )
+        model = client.AIModel.useModel
 
-    response = client.generate(request = request)
-    print(response.raw_response)
+    response = method(
+        model = model, # type: ignore
+        request = request,
+        apikey = client.apikey, # type: ignore
+        base_url = base_url
+    )
 
     return response
-
-
-if __name__ == "__main__":
-    launch()
