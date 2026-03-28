@@ -34,24 +34,14 @@ class ClientManager(object):
         self.provider = self.__set_provider__()
 
         # Set the Client Engine based on the Provider Name
-        self._client = self.__set_client__(provider = self.provider)
+        self.client = self.__set_client__(provider = self.provider)
 
         # Set the Model Name based on the Provider Name
-        self._model = self.__set_model__(provider = self.provider)
+        self.model = self.__set_model__(provider = self.provider)
 
         # Set other Model Controls (TODO Method) for Inputs
         self.max_tokens = int(input("Max. Tokens [4096]: ") or 4096)
         self.temperature = float(input("Temperature [0.7]: ") or 0.7)
-
-
-    @property
-    def model(self) -> AIModel:
-        return AIModel(
-            provider = self.provider,
-            useModel = self._model,
-            max_tokens = self.max_tokens,
-            temperature = self.temperature
-        )
 
 
     def __set_provider__(self) -> AIProvider:
@@ -87,11 +77,11 @@ class ClientManager(object):
         
         # based on the provider, return the client name with import
         if provider == "CLAUDE":
-            from autoblogs.client import ClaudeClient # type: ignore
-            client = ClaudeClient
+            from autoblogs.client.anthropic import claudeGenerate
+            client = claudeGenerate
         else:
-            from autoblogs.client import OpenAIClient # type: ignore
-            client = OpenAIClient
+            from autoblogs.client.openai import generateOpenAI
+            client = generateOpenAI
 
         return client
 

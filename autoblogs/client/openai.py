@@ -38,11 +38,11 @@ def generateOpenAI(
 
     # Context holds the required Jinja2 Template
     # The Context can only be send as ``messages`` argument
-    messages = [{"role" : "system", "content" : request.prompt}]
+    messages = [{"role" : "user", "content" : request.prompt}]
 
     if request.context:
         messages.append({
-            "role" : "system", "content" : request.context
+            "role" : "user", "content" : request.context
         })
 
     try:
@@ -57,7 +57,7 @@ def generateOpenAI(
     except openai.RateLimitError as e:
         raise AIRateLimitError(f"Rate Limit Reached: {e}") from e
     except openai.APIError as e:
-        raise AIClientError(f"Claude API Error: {e}") from e
+        raise AIClientError(f"OpenAI API Error: {e}") from e
 
     raw_response = response.choices[0].message.content \
         if response.choices else None # failed to get any response

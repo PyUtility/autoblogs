@@ -12,8 +12,6 @@ may be required to fine tune the final output.
 import jinja2
 import pathlib
 
-from typing import Callable
-
 from autoblogs.directory import promptsdir
 
 class ContentManager:
@@ -44,7 +42,6 @@ class ContentManager:
 
     def __init__(
         self,
-        client : Callable,
         outdir : pathlib.Path,
         context : str = "base.txt.jinja",
         verbose : bool = False
@@ -53,7 +50,6 @@ class ContentManager:
         Initialization of Content Manager Object
         """
 
-        self.client = client
         self.outdir = outdir
         self.context = context
         self.verbose = verbose

@@ -14,12 +14,10 @@ response needs to be augmented, then create a new instance.
 
 import datetime as dt
 
-from typing import Optional, Union
+from typing import Optional
 from dataclasses import dataclass, field
 
-from autoblogs.config.constants import (
-    AIProvider, ClaudeModel, OpenAIModel
-)
+from autoblogs.config.constants import AIProvider
 
 @dataclass(frozen = True)
 class AIModel:
