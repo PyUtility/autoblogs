@@ -6,6 +6,8 @@
 [![GitHub Forks](https://img.shields.io/github/forks/PyUtility/autoblogs?style=plastic)](https://github.com/PyUtility/autoblogs/network)
 [![GitHub Stars](https://img.shields.io/github/stars/PyUtility/autoblogs?style=plastic)](https://github.com/PyUtility/autoblogs/stargazers)
 [![LICENSE File](https://img.shields.io/github/license/PyUtility/autoblogs?style=plastic)](https://github.com/PyUtility/autoblogs/blob/master/LICENSE)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/autoblogs?style=plastic)](https://pypistats.org/packages/autoblogs)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/autoblogs.svg?style=plastic)](https://pypi.org/project/autoblogs/)
 
 </div>
 
