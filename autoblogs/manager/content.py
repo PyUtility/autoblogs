@@ -30,6 +30,12 @@ class ContentManager:
     :param outdir: Output directory to store the generated content,
         should be a valid directory.
 
+    :type  context: str
+    :param context: The context sets the LLM Agent's memory and is
+        required to generate the content in a better manner. A set of
+        default context templates are provided in the module directory
+        (``autobogs/prompts``) which uses the :mod:`jinja2` template.
+
     :type  verbose: bool
     :param verbose: Enable verbose print output, defaults to ``False``
         for console and/or terminal logging/
@@ -54,11 +60,12 @@ class ContentManager:
 
     def render(self, **kwargs) -> str:
         """
-        Read & Format the Prompt as per the Front Matter with Parameter Control
+        Read & Format the Prompt as per the Front Matter Control
 
-        Using the :mod:`jinja2` templating engine, the following context are
-        loaded to create better content. Check the individual prompt template
-        file on the variable to understand the context.
+        Using the :mod:`jinja2` templating engine, the following
+        context are loaded to create better content. Check the
+        individual prompt template file on the variable to understand,
+        or generate one as per requirement.
         """
 
         env = jinja2.Environment(
