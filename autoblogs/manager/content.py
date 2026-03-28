@@ -1,14 +1,18 @@
 # -*- encoding: utf-8 -*-
 
 """
-Typical Orchestration of Content using Persistent Manager
+Typical Orchestration of Content using a Persistent Manager
 
 Orchestrates the full blog-post lifecycle from Topic creation through
 AI generation, draft refinement, human approval, and final publishing.
+The content manager also controls the different types of content that
+may be required to fine tune the final output.
 """
 
+import jinja2
 import pathlib
 
+from autoblogs.directory import promptsdir
 from autoblogs.client.base import AIClient
 
 class ContentManager:
@@ -35,6 +39,7 @@ class ContentManager:
         self,
         client : AIClient,
         outdir : pathlib.Path,
+        context : str = "base.txt.jinja",
         verbose : bool = False
     ) -> None:
         """
@@ -43,4 +48,24 @@ class ContentManager:
 
         self.client = client
         self.outdir = outdir
+        self.context = context
         self.verbose = verbose
+
+
+    def render(self, **kwargs) -> str:
+        """
+        Read & Format the Prompt as per the Front Matter with Parameter Control
+
+        Using the :mod:`jinja2` templating engine, the following context are
+        loaded to create better content. Check the individual prompt template
+        file on the variable to understand the context.
+        """
+
+        env = jinja2.Environment(
+            loader = jinja2.FileSystemLoader(str(promptsdir))
+        )
+        return env.get_template(self.context).render(**kwargs).strip()
+
+
+    def writefile(self, content : str, filename : str) -> None:
+        pass
