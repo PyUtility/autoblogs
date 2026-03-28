@@ -9,8 +9,8 @@ The content manager also controls the different types of content that
 may be required to fine tune the final output.
 """
 
+import os
 import jinja2
-import pathlib
 
 from autoblogs.directory import promptsdir
 
@@ -34,25 +34,15 @@ class ContentManager:
         required to generate the content in a better manner. A set of
         default context templates are provided in the module directory
         (``autobogs/prompts``) which uses the :mod:`jinja2` template.
-
-    :type  verbose: bool
-    :param verbose: Enable verbose print output, defaults to ``False``
-        for console and/or terminal logging/
     """
 
-    def __init__(
-        self,
-        outdir : pathlib.Path,
-        context : str = "base.txt.jinja",
-        verbose : bool = False
-    ) -> None:
+    def __init__(self, outdir : str, context : str) -> None:
         """
         Initialization of Content Manager Object
         """
 
         self.outdir = outdir
         self.context = context
-        self.verbose = verbose
 
 
     def render(self, **kwargs) -> str:
@@ -72,4 +62,9 @@ class ContentManager:
 
 
     def writefile(self, content : str, filename : str) -> None:
-        pass
+        assert not os.path.exists(filename), "File Exists."
+
+        with open(filename, "w") as file:
+            file.writelines(content)
+
+        return

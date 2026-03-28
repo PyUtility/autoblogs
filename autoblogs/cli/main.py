@@ -68,12 +68,17 @@ def launch() -> AIResponse:
     max_tokens = os.getenv("MAX_TOKENS")
     temperature = os.getenv("TEMPERATURE")
 
+    outdir = os.getenv("CONTENT_OUTPUT_DIR")
+    promptfile = os.getenv("AGENT_PROMPT_CONTEXT")
+
     # get the client and content manager, and initialize
     client = ClientManager(
         provider = provider, modelname = modelname, # type: ignore
         apikey = apikey, base_url = base_url
     )
-    content = ContentManager(outdir = None) # TODO # type: ignore
+    content = ContentManager(
+        outdir = outdir, context = promptfile # type: ignore
+    )
 
     # the final resolved client function, return after checks
     method = client.client
@@ -110,6 +115,12 @@ def launch() -> AIResponse:
         request = request,
         apikey = client.apikey, # type: ignore
         base_url = base_url
+    )
+
+    outfile = input("Input Output Filename: ")
+    content.writefile(
+        content = response.raw_response, # type: ignore
+        filename = os.path.join(outdir, outfile) # type: ignore
     )
 
     return response
