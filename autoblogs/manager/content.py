@@ -12,8 +12,9 @@ may be required to fine tune the final output.
 import jinja2
 import pathlib
 
+from typing import Callable
+
 from autoblogs.directory import promptsdir
-from autoblogs.client.base import AIClient
 
 class ContentManager:
     """
@@ -43,7 +44,7 @@ class ContentManager:
 
     def __init__(
         self,
-        client : AIClient,
+        client : Callable,
         outdir : pathlib.Path,
         context : str = "base.txt.jinja",
         verbose : bool = False
