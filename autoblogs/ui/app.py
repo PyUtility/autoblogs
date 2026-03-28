@@ -26,7 +26,7 @@ def build_pages(parent : pathlib.Path) -> List[Any]:
     pages = [
         ("about.py", "About AutoBlogs UI", "📜"),
         ("dashboard.py", "Dashboard Page", "📊"),
-        ("create.py", "Create Content", "🤖"),
+        ("create.py", "Create Content", "📝"),
         ("review.py", "Draft Editor", "✍"),
         ("settings.py", "Model Settings", "⚙")
     ]

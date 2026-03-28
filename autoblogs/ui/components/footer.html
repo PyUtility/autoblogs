@@ -1,6 +1,36 @@
-<footer>
+<footer id="autoblogs-footer">
   <div align = "center">
     <p>Copywright &copy; Debmalya Pramanik, 2025</p>
     <p>Made with ❤️ by <a href = "https://github.com/PyUtility">PyUtility</a></p>
   </div>
 </footer>
+
+<script>
+(function () {
+    function positionFooter() {
+        var main   = document.querySelector('section[data-testid="stMain"]');
+        var footer = document.getElementById('autoblogs-footer');
+        if (!main || !footer) return;
+
+        var rect = main.getBoundingClientRect();
+        footer.style.left  = rect.left + 'px';
+        footer.style.width = rect.width + 'px';
+    }
+
+    /* Poll until Streamlit has mounted the main section, then wire observers. */
+    function init() {
+        var main = document.querySelector('section[data-testid="stMain"]');
+        if (!main) { setTimeout(init, 100); return; }
+
+        positionFooter();
+
+        /* Fires whenever the main panel resizes (sidebar open / close / drag). */
+        new ResizeObserver(positionFooter).observe(main);
+
+        /* Fires on browser window resize. */
+        window.addEventListener('resize', positionFooter);
+    }
+
+    init();
+})();
+</script>
