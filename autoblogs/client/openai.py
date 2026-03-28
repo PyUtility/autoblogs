@@ -36,14 +36,10 @@ def generateOpenAI(
             api_key = apikey, base_url = base_url
         )
 
-    # Context holds the required Jinja2 Template
-    # The Context can only be send as ``messages`` argument
     messages = [{"role" : "user", "content" : request.prompt}]
 
     if request.context:
-        messages.append({
-            "role" : "user", "content" : request.context
-        })
+        messages.append({"role" : "system", "content" : request.context})
 
     try:
         response = client.chat.completions.create(
