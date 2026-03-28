@@ -58,13 +58,21 @@ def launch() -> AIResponse:
     """
 
     welcome()
-
     load_dotenv()
+
+    provider = os.getenv("LLM_PROVIDER")
+    modelname = os.getenv("LLM_MODEL_NAME")
     apikey  = os.getenv("LLM_MODEL_APIKEY")
     base_url = os.getenv("LLM_API_BASE_URL")
 
+    max_tokens = os.getenv("MAX_TOKENS")
+    temperature = os.getenv("TEMPERATURE")
+
     # get the client and content manager, and initialize
-    client = ClientManager(apikey = apikey)
+    client = ClientManager(
+        provider = provider, modelname = modelname, # type: ignore
+        apikey = apikey, base_url = base_url
+    )
     content = ContentManager(outdir = None) # TODO # type: ignore
 
     # the final resolved client function, return after checks
@@ -93,8 +101,8 @@ def launch() -> AIResponse:
     model = AIModel(
         provider = client.provider,
         useModel = os.getenv("LLM_MODEL_NAME"),
-        max_tokens = client.max_tokens,
-        temperature = client.temperature
+        max_tokens = max_tokens, # type: ignore
+        temperature = temperature # type: ignore
     )
 
     response = method(

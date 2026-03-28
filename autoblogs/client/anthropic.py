@@ -9,7 +9,7 @@ import anthropic
 
 from uuid import uuid4 as UUIDx
 
-from autoblogs.error import AIClientError, AIRateLimitError
+from autoblogs.error.error import AIClientError, AIRateLimitError
 from autoblogs.model.dataflows import AIModel, AIRequest, AIResponse
 
 
