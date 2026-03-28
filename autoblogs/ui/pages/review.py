@@ -48,20 +48,9 @@ def review() -> None:
 
     st.divider()
 
-    if "preview_mode" not in st.session_state:
-        st.session_state["preview_mode"] = False
+    tab_edit, tab_preview = st.tabs(["Edit", "Preview"])
 
-    col_edit, col_preview = st.columns([1, 1])
-    with col_edit:
-        if st.button("Edit", use_container_width = True, type = "secondary"):
-            st.session_state["preview_mode"] = False
-    with col_preview:
-        if st.button("Preview", use_container_width = True, type = "primary"):
-            st.session_state["preview_mode"] = True
-
-    if st.session_state["preview_mode"]:
-        st.markdown(st.session_state.get("draft", response.raw_response or ""))
-    else:
+    with tab_edit:
         draft = st.text_area(
             "Edit Draft",
             value  = st.session_state.get("draft", response.raw_response or ""),
@@ -69,6 +58,9 @@ def review() -> None:
             key    = "draft_editor"
         )
         st.session_state["draft"] = draft
+
+    with tab_preview:
+        st.markdown(st.session_state.get("draft", response.raw_response or ""))
 
     st.divider()
 
