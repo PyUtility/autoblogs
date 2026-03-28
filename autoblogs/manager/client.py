@@ -4,13 +4,9 @@
 A Application for Management of Clients for AutoBlogs
 """
 
-from typing import Optional, Callable
+from typing import Dict, Optional, Callable
 
-from autoblogs.config.constants import (
-    AIProvider, ClaudeModel, OpenAIModel
-)
-from autoblogs.error import UndefinedModel
-from autoblogs.model.dataflows import AIModel
+from autoblogs.error.error import AIClientError
 from autoblogs.config.constants import AIProvider
 
 class ClientManager(object):
@@ -22,92 +18,72 @@ class ClientManager(object):
     abstract methods provide default signature which is enforced to
     remain the same in the concrete classes.
 
-    :type  apikey: str
+    :type  provider: str
+    :param provider: Name of the supported AI/LLM Agents provider(s),
+        this can be any of the defined :class:`AIProvider` values. A
+        provider may require Python specific SDK module - for example
+        when using ``CLAUDE`` the ``anthropic`` module is required, or
+        ``openai`` is required for ``OPENAI`` or ``NVIDIA-NIM``. The
+        client manager checks if the existing model is present and
+        raises an exception if not.
+
+    :type  modelname: str
+    :param modelname: Any valid name of the model, this is a string
+        and can be customized as per the provider. Check individual
+        providers for the list of supported models.
+
+    :type  apikey: Optional[str]
     :param apikey: API Key for the AI Provider, this should be defined
         under the environment variable.
+
+    :type  base_url: str
+    :param base_url: Some models like ``NVIDIA-NIM`` requires a custom
+        base URL which calls the underlying APIs. The URL is passed
+        to the underlying client functions as a parameter.
     """
 
-    def __init__(self, apikey : Optional[str]) -> None:
-        self.apikey = apikey # any valid key, or none if not required
-
-        # Set AI Provider based on User Input/UI Calls (TODO)
-        self.provider = self.__set_provider__()
-
-        # Set the Client Engine based on the Provider Name
-        self.client = self.__set_client__(provider = self.provider)
-
-        # Set the Model Name based on the Provider Name
-        self.model = self.__set_model__(provider = self.provider)
-
-        # Set other Model Controls (TODO Method) for Inputs
-        self.max_tokens = int(input("Max. Tokens [4096]: ") or 4096)
-        self.temperature = float(input("Temperature [0.7]: ") or 0.7)
+    def __init__(
+            self,
+            provider : str,
+            modelname : str,
+            apikey : Optional[str] = None,
+            base_url : Optional[str] = None
+    ) -> None:
+        self.provider = self.__set_provider__(provider = provider)
+        self.modelname = modelname
+        self.apikey = apikey
+        self.base_url = base_url
 
 
-    def __set_provider__(self) -> AIProvider:
-        provider = [ (elem.value, elem.name) for elem in AIProvider ]
-        selection = input(
-            "Select an AI Provider\n"
-            + "\n".join([f"  >> {x[0]:<2} : {x[1]}" for x in provider])
-            + "\n User Choice [LOCAL]: "
-        ) or "LOCAL"
+    @property
+    def defaultSDK(self) -> Dict[str, str]:
+        return {
+            "CLAUDE" : "anthropic", "OPENAI" : "openai",
+            "NVIDIA-NIM" : "openai", "LOCAL" : "openai"
+        }
 
-        try:
-            provider = AIProvider[selection.upper()] \
-                if selection.upper() in AIProvider.__members__ \
-                else AIProvider(int(selection))
-        except (KeyError, ValueError):
-            raise UndefinedModel(model = selection)
-        
-        return provider
-    
 
-    def __set_client__(self, provider : AIProvider) -> Callable:
-        requirements = dict(CLAUDE = "anthropic")
-        requirements = requirements.get(provider.name, "openai")
+    @property
+    def client(self) -> Callable:
+        _provider = self.provider.value
 
-        # check hard dependency for the module; else raise error
-        # this should be adjusted with the AI Client Error Module
-        try:
-            __import__(requirements)
-        except ImportError:
-            raise ImportError(
-                f"Required Module {requirements} is not installed"
-            )
-        
-        # based on the provider, return the client name with import
-        if provider == "CLAUDE":
+        if _provider == "CLAUDE":
             from autoblogs.client.anthropic import claudeGenerate
-            client = claudeGenerate
+            _client = claudeGenerate
         else:
             from autoblogs.client.openai import generateOpenAI
-            client = generateOpenAI
+            _client = generateOpenAI
 
-        return client
+        return _client
 
 
-    def __set_model__(self, provider : AIProvider) -> Optional[str]:
-        models = dict(CLAUDE = ClaudeModel, OPENAI = OpenAIModel)
-        models = models.get(provider.name, None)
+    def __set_provider__(self, provider : str) -> AIProvider:
+        _provider = AIProvider.getName(name = provider)
+        clientsdk = self.defaultSDK[_provider.value] # type: ignore
 
-        model = None # only when LOCAL/custom model is required
-        if models:
-            options = [ (elem.value, elem.name) for elem in models ]
-            selection = input(
-                "Select an AI Model\n"
-                + "\n".join([f"  >> {x[0]:<2} : {x[1]}" for x in options])
-                + "\n User Choice: "
-            )
-
-            try:
-                model = models[selection.upper()] \
-                    if selection.upper() in models.__members__ \
-                    else models(int(selection))
-                
-                model = model.name
-            except (KeyError, ValueError):
-                model = selection.upper()
-        else:
-            model = "https://localhost:11434"
-
-        return model
+        try:
+            __import__(clientsdk)
+        except ImportError:
+            raise AIClientError(f"PySDK `{clientsdk}` is Required.")
+        
+        return _provider

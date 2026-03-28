@@ -15,7 +15,7 @@ The typical constants are defined as below:
         where a client is available and supported/tested.
 """
 
-from enum import Enum
+from enum import Enum, unique
 
 DraftState = Enum(
     "DraftState", [
@@ -25,16 +25,19 @@ DraftState = Enum(
 )
 
 
-AIProvider = Enum(
-    "AIProvider", ["CLAUDE", "OPENAI", "NVIDIA_NIM", "LOCAL"]
-)
+@unique
+class AIProvider(Enum):
+    CLAUDE     = "CLAUDE"
+    OPENAI     = "OPENAI"
+    NVIDIA_NIM = "NVIDIA-NIM"
+    LOCAL      = "LOCAL"
 
-# LLM Agent Specific Model Name(s); Useful for Context Setting and
-# other forms of optimization of the output, token usage, etc.
-ClaudeModel = Enum(
-    "ClaudeModel", ["HAIKU 4.5", "SONET 4.6", "OPUS 4.6"],
-)
 
-OpenAIModel = Enum(
-    "OpenAIModel", ["GPT-5.1 Codex", "GPT-4.1", "GPT-5 nano"]
-)
+    @classmethod
+    def getName(cls, name : str) -> "AIProvider":
+        """
+        Normalize the Provider Name and then Return the Enum
+        """
+
+        name = name.upper().replace("-", "_")
+        return cls[name]
