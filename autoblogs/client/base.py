@@ -65,7 +65,7 @@ class AIClient(object):
         ) or "LOCAL"
 
         try:
-            provider = AIProvider(selection.upper()) \
+            provider = AIProvider[selection.upper()] \
                 if selection.upper() in AIProvider.__members__ \
                 else AIProvider(int(selection))
         except (KeyError, ValueError):
