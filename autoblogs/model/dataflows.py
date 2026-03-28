@@ -58,8 +58,7 @@ class AIModel:
     """
 
     provider : AIProvider = AIProvider.LOCAL
-    useModel : Union[ClaudeModel, OpenAIModel, str] \
-        = "https://localhost:11434"
+    useModel : Optional[str] = None
 
     # general model configuration parameters, usage as per model
     max_tokens  : int = 4096
