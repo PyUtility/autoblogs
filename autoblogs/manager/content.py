@@ -64,7 +64,7 @@ class ContentManager:
     def writefile(self, content : str, filename : str) -> None:
         assert not os.path.exists(filename), "File Exists."
 
-        with open(filename, "w") as file:
+        with open(filename, "w", encoding = "utf-8") as file:
             file.writelines(content)
 
         return

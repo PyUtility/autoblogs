@@ -24,9 +24,9 @@ def build_pages(parent : pathlib.Path) -> List[Any]:
 
     path = parent / "pages"
     pages = [
-        ("about.py", "About AutoBlogs UI", "📜"),
+        ("about.py", "About the App", "📜"),
         ("dashboard.py", "Dashboard Page", "📊"),
-        ("create.py", "Create Content", "🤖"),
+        ("create.py", "Create Content", "📝"),
         ("review.py", "Draft Editor", "✍"),
         ("settings.py", "Model Settings", "⚙")
     ]
@@ -59,5 +59,14 @@ if __name__ == "__main__":
     )
 
     load_style(parent = parent) # load style scheet; no error checks
+
+    # --- sidebar info button pinned to bottom-left ---
+    st.sidebar.markdown(
+        '<div class="sidebar-info-btn">'
+        '<a href="https://github.com/PyUtility" target="_blank" title="Visit PyUtility on GitHub">i</a>'
+        '</div>',
+        unsafe_allow_html = True
+    )
+
     nav = st.navigation(build_pages(parent = parent))
     nav.run() # run the application; navigation engine

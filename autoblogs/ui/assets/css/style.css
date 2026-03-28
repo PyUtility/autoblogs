@@ -30,7 +30,7 @@ body,
 
 /* --- sidebar --- */
 [data-testid="stSidebarNav"] {
-  padding-top: 1rem;
+  padding-top: 0;
 }
 
 section[data-testid="stSidebar"] {
@@ -39,6 +39,51 @@ section[data-testid="stSidebar"] {
 
 section[data-testid="stSidebar"] * {
   color: #e2e8f0 !important;
+}
+
+/* --- sidebar heading (top-center, above nav links) --- */
+[data-testid="stSidebarNav"]::before {
+  content: "AutoBlogs UI";
+  display: block;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e2e8f0 !important;
+  padding: 1rem 0 1rem 0;
+  border-bottom: 1px solid #2d3748;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* --- sidebar info button (fixed bottom-left) --- */
+.sidebar-info-btn {
+  position: fixed;
+  bottom: 1rem;
+  left: 0.75rem;
+  z-index: 9999;
+}
+
+.sidebar-info-btn a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #2d3748;
+  color: #a0aec0 !important;
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: 700;
+  text-decoration: none !important;
+  border: 1px solid #4a5568;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-info-btn a:hover {
+  background-color: #3b82f6;
+  color: #ffffff !important;
+  border-color: #3b82f6;
 }
 
 /* --- buttons --- */
