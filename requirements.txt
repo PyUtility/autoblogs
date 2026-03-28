@@ -1,4 +1,3 @@
-aptracker>=2.2
 dotenv>=0.9
 jinja2>=3.1
 streamlit>=1.55
