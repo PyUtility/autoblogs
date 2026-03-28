@@ -36,63 +36,97 @@ pip install autoblogs
 ```
 
 The package does not have a hard dependency on a third-party LLM SDK, but requires one based on the type of model you want to
-use. For example,
-
-```python
-import autoblogs
-
-...
-
-client = autoblogs.client.OpenAIClien(...) # pip install openai
-client = autoblogs.client.ClaudeClient(...) # pip install anthropic
-```
+use. For example, it either requires the [Anthropic SDK](https://pypi.org/project/anthropic/) for the `CLAUDE` provider or the
+[OpenAI SDK](https://pypi.org/project/openai/) for all other types of providers.
 
 ### Environment Variables
 
-For getting started, you will require the name of the model (`LLM_MODEL_NAME`) and an API key (if any, `LLM_MODEL_APIKEY`) to
-use the module. You can also integrate with external API endpoints or self-hosted/your own company's API endpoints to configure
-the services as below.
+Copy `.env.example` to `.env` and fill in your values, or supply them as system environment variables. The available
+variables are described below.
 
 ```shell
+# LLM provider name - e.g. "OPENAI", "ANTHROPIC", "LOCAL", "NVIDIA-NIM"
+LLM_PROVIDER = "LOCAL"
+
+# Model identifier and API key for the selected provider
 LLM_MODEL_NAME = "awesome-model"
-LLM_MODEL_APIKEY = "abc-example.com"
+LLM_MODEL_APIKEY = "your-api-key-here"
+
+# Optional: override the default API base URL (useful for self-hosted or custom endpoints)
 LLM_API_BASE_URL = "https://example.com/api/v1"
+
+# Model generation parameters
+MAX_TOKENS = 4096
+TEMPERATURE = 0.7
+
+# I/O configuration
+CONTENT_OUTPUT_DIR = "output"
+AGENT_PROMPT_CONTEXT = "base.txt.jinja"
 ```
 
 ### Command Line Tools
 
-The package provides distinct *command-line* tools for different tasks. (I) **`autoblogs-ui`** opens a full-fledged UI to
-create, modify, and finalize content, and (II) **`autoblogs-cli`** is the same application available in the terminal.
+The package provides two distinct tools for different workflows. **`autoblogs-cli`** is a lightweight interactive terminal
+tool for quick content generation, while **`autoblogs-ui`** launches a full browser-based dashboard for an end-to-end
+editorial workflow — creation, editing, preview, and file management.
 
-### Python Script
+#### AutoBlogs-CLI
 
-```python
-import autoblogs
+`autoblogs-cli` runs entirely in the terminal. It reads your configuration from the `.env` file (or system environment),
+then walks you through a short interactive session to collect the content requirements before calling the LLM.
 
-model = autoblogs.model.AIModel(
-  model = os.environ.get("LLM_MODEL_NAME"), provider = "LLM-PROVIDER"
-)
-request = autoblogs.model.AIRequest(
-  topic = "Linear Regression",
-  prompt = "What is Linear Regression? Explain in 50 Words."
-)
-
-# use openai client to use openai/any suuported endpoints
-client = autoblogs.client.OpenAIClient(
-  model = model, apikey = os.environ.get("LLM_MODEL_APIKEY"),
-  base_url = os.environ.get("LLM_API_BASE_URL")
-)
-
-# or, use claude client; this does not support an base url
-client = autoblogs.client.ClaudeClient(
-  model = model, apikey = os.environ.get("LLM_MODEL_APIKEY")
-)
-
-# get the response using `.generate()` function; unified in clients
-response - client.generate(request = request)
-print(response.raw_reponse)
->>> Linear Regression is a statistical method that ...
+```shell
+autoblogs-cli
 ```
+
+Once launched, it prompts for the following inputs in order:
+
+| Prompt | Description | Example |
+|--------|-------------|---------|
+| **Content Topic** | One-line subject of the post | `Linear Regression for Beginners` |
+| **Generation Prompt** | Free-form instructions for the model | `Explain with real-world examples, keep it beginner-friendly` |
+| **SEO Keywords** | Comma-separated keywords to embed | `statistics, regression, machine learning, data science` |
+| **Output Filename** | Path (relative to `CONTENT_OUTPUT_DIR`) to save the result | `linear-regression.md` |
+
+A sample session looks like:
+
+```
+Set the Content Topic (one-line): Linear Regression for Beginners
+Explain the Prompt to Generate Content: Explain with real-world examples, keep it beginner-friendly
+Set SEO Keywords (comma separated): statistics, regression, machine learning
+Input Output Filename: linear-regression.md
+```
+
+The generated post is written to `<CONTENT_OUTPUT_DIR>/<Output Filename>` (default: `output/linear-regression.md`).
+
+#### AutoBlogs-UI
+
+`autoblogs-ui` launches a multi-page [Streamlit](https://streamlit.io/) dashboard in your browser. It provides the same
+content generation capabilities as the CLI, plus an inline draft editor, live markdown preview, and file download.
+
+```shell
+# Launch on the default port (http://localhost:8501)
+autoblogs-ui
+
+# Run on a custom port
+autoblogs-ui --server.port 8080
+
+# Run in headless / server mode (no browser auto-open)
+autoblogs-ui --server.headless true
+```
+
+Any native [Streamlit CLI flag](https://docs.streamlit.io/develop/api-reference/cli/run) is accepted and forwarded
+directly. Once running, open `http://localhost:8501` (or the configured port) in your browser.
+
+The dashboard is organised into five pages:
+
+| Page | Description |
+|------|-------------|
+| **About the App** | Project overview, supported providers, and last-run generation metrics |
+| **Dashboard** | Browse generated files — lists output directory contents with size and a quick preview |
+| **Create Content** | Fill in Topic, Prompt, and SEO Keywords, then click *Generate Content* to call the LLM |
+| **Draft Editor** | Edit the generated draft inline, preview rendered Markdown, save to file, or download |
+| **Model Settings** | Change provider, model name, API key, base URL, temperature, max tokens, and prompt template without restarting |
 
 ## Contribution Guidelines
 
