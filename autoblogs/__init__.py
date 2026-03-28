@@ -11,7 +11,7 @@ integrates a *human-in-the-loop workflow*, ensuring that AI-generated
 drafts can be reviewed, edited, and published.
 """
 
-__version__ = "v1.0.0.dev0"
+__version__ = "v1.0.0"
 
 # ? added init time options registrations from aptracker/api.py
 from autoblogs.api import * # noqa: F401, F403 # pyright: ignore[reportMissingImports]
